@@ -1,0 +1,583 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "search-training-examples-v0.2.schema.json",
+  "title": "search_training_examples retrieval contract v0.2 (case schema remains v0.2)",
+  "description": "Reviewable reference-retrieval contract. Cross-theme mechanisms allowed; no strict source filters or fixed score structure. Not an implemented retrieval strategy. Resolve the case schema from the local registry without network.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/request"
+    },
+    {
+      "$ref": "#/$defs/response"
+    }
+  ],
+  "$defs": {
+    "topicCode": {
+      "enum": [
+        "F0",
+        "A1",
+        "A2",
+        "A3",
+        "D1",
+        "D2",
+        "D3",
+        "T+",
+        "T-"
+      ]
+    },
+    "caseType": {
+      "enum": [
+        "drill",
+        "session"
+      ]
+    },
+    "scale": {
+      "enum": [
+        "individual",
+        "unit",
+        "team"
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "relevanceHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "topic_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/topicCode"
+          }
+        },
+        "scales": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/scale"
+          }
+        },
+        "case_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/caseType"
+          }
+        }
+      },
+      "minProperties": 1,
+      "description": "Optional relevance hints only, including case form. Never exclusion filters or guaranteed ranking; mechanisms may be useful across themes, scales and case forms."
+    },
+    "fieldOrigin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "origin",
+        "detail"
+      ],
+      "properties": {
+        "field": {
+          "enum": [
+            "contract_version",
+            "query",
+            "top_k",
+            "relevance_hints.topic_codes",
+            "relevance_hints.scales",
+            "relevance_hints.case_types"
+          ]
+        },
+        "origin": {
+          "enum": [
+            "user_current_request",
+            "confirmed_context",
+            "derived_mapping",
+            "system_default"
+          ]
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "description": "Required for every origin. Explain how the source supports the field value and why it applies; for confirmed_context, keep the locator in context_reference rather than repeating it here."
+        },
+        "context_reference": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "description": "Context locator, required for confirmed_context in addition to detail; it does not replace the explanation in detail."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "confirmed_context"
+              }
+            },
+            "required": [
+              "origin"
+            ]
+          },
+          "then": {
+            "required": [
+              "context_reference"
+            ]
+          }
+        }
+      ]
+    },
+    "unresolvedInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "reason",
+        "action",
+        "clarification"
+      ],
+      "properties": {
+        "field": {
+          "enum": [
+            "relevance_hints.topic_codes",
+            "relevance_hints.scales",
+            "relevance_hints.case_types"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "action": {
+          "const": "omitted"
+        },
+        "clarification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "question_reference",
+            "answer_reference",
+            "outcome",
+            "resolution_detail"
+          ],
+          "properties": {
+            "question_reference": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "answer_reference": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "outcome": {
+              "enum": [
+                "still_unclear",
+                "user_unsure"
+              ]
+            },
+            "resolution_detail": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          }
+        }
+      },
+      "description": "An audit record linked only to real clarification directly relevant to handling this omitted optional hint, after the necessary training need has been resolved. Do not attach unrelated training-goal questions. This is not global task clarification state. Hints never trigger mandatory questioning. If the necessary need remains unresolved, wait and do not submit. With no directly related clarification, leave unresolved_inputs empty."
+    },
+    "requestTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field_origins",
+        "unresolved_inputs"
+      ],
+      "properties": {
+        "field_origins": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/fieldOrigin"
+          }
+        },
+        "unresolved_inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/unresolvedInput"
+          }
+        }
+      }
+    },
+    "auditRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request_id",
+        "request_trace"
+      ],
+      "properties": {
+        "request_id": {
+          "$ref": "#/$defs/requestId"
+        },
+        "request_trace": {
+          "$ref": "#/$defs/requestTrace"
+        }
+      }
+    },
+    "requestDraft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "query",
+        "top_k"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "0.2"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "maxLength": 1000,
+          "description": "Standalone current training need, including team conditions and unresolved facts where relevant. Team conditions constrain final design, not source exclusion. Do not reduce to topic codes or invent facts."
+        },
+        "top_k": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 5
+        },
+        "relevance_hints": {
+          "$ref": "#/$defs/relevanceHints"
+        }
+      },
+      "description": "No ID draft; caller injects contract_version and top_k default before validating draft and trace. Record these defaults as system_default."
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "request_id",
+        "query",
+        "top_k"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "0.2"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "maxLength": 1000,
+          "description": "Standalone current training need, including team conditions and unresolved facts where relevant. Team conditions constrain final design, not source exclusion. Do not reduce to topic codes or invent facts."
+        },
+        "top_k": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 5
+        },
+        "relevance_hints": {
+          "$ref": "#/$defs/relevanceHints"
+        },
+        "request_id": {
+          "$ref": "#/$defs/requestId"
+        }
+      },
+      "description": "Final immutable request; caller assigns ID only after validation and persists full snapshot and independent audit before dispatch. No caller trace is sent to retrieval."
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "case_type",
+        "case_payload",
+        "content_hash",
+        "match_explanation"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "case_type": {
+          "$ref": "#/$defs/caseType"
+        },
+        "case_payload": {
+          "$ref": "case-v0.2.schema.json"
+        },
+        "content_hash": {
+          "$ref": "#/$defs/contentHash"
+        },
+        "match_explanation": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "case_pointer",
+              "reason"
+            ],
+            "properties": {
+              "case_pointer": {
+                "type": "string",
+                "pattern": "^(?:/(?:[^~/]|~[01])*)*$",
+                "description": "RFC 6901 JSON Pointer relative to case_payload. Caller/service must check the referenced value exists; shape alone does not prove this."
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      },
+      "description": "Complete admitted source case, unchanged values and unknowns. Reuses case schema v0.2 locally. Identity equality, formal admission, pointer existence, hash agreement and duplicate case_id+hash checks require program checks; explanations justify returning a reference, not adoption."
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "retrievalRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy_version",
+        "limit",
+        "truncated"
+      ],
+      "properties": {
+        "strategy_version": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "description": "Actual approved relevance strategy version and result cap. limit is the applied top_k, not a similarity threshold. truncated is true only when the actually qualified set was capped."
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "request_id",
+        "case_schema_version",
+        "library_version",
+        "status",
+        "results",
+        "error"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "0.2"
+        },
+        "request_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/requestId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "case_schema_version": {
+          "const": "0.2"
+        },
+        "library_version": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "no_match",
+            "invalid_request",
+            "unavailable"
+          ]
+        },
+        "results": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/result"
+          }
+        },
+        "error": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retrieval_run": {
+          "$ref": "#/$defs/retrievalRun"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "status": {
+              "const": "ok"
+            },
+            "request_id": {
+              "$ref": "#/$defs/requestId"
+            },
+            "library_version": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "results": {
+              "minItems": 1
+            },
+            "error": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "retrieval_run"
+          ]
+        },
+        {
+          "properties": {
+            "status": {
+              "const": "no_match"
+            },
+            "request_id": {
+              "$ref": "#/$defs/requestId"
+            },
+            "library_version": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "results": {
+              "maxItems": 0
+            },
+            "error": {
+              "type": "null"
+            },
+            "retrieval_run": {
+              "properties": {
+                "truncated": {
+                  "const": false
+                }
+              }
+            }
+          },
+          "required": [
+            "retrieval_run"
+          ]
+        },
+        {
+          "properties": {
+            "status": {
+              "const": "invalid_request"
+            },
+            "results": {
+              "maxItems": 0
+            },
+            "error": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/error"
+                },
+                {
+                  "properties": {
+                    "retryable": {
+                      "const": false
+                    }
+                  }
+                }
+              ]
+            },
+            "retrieval_run": false
+          }
+        },
+        {
+          "properties": {
+            "status": {
+              "const": "unavailable"
+            },
+            "request_id": {
+              "$ref": "#/$defs/requestId"
+            },
+            "results": {
+              "maxItems": 0
+            },
+            "error": {
+              "$ref": "#/$defs/error"
+            },
+            "retrieval_run": false
+          }
+        }
+      ],
+      "description": "Echo the valid incoming request_id exactly; only invalid_request with no recoverable valid ID may use null, never invent an ID. Failed responses are empty with structured error; library_version may be null if not loaded. State cardinality checks are structural, relevance and ID equality require program checks."
+    }
+  }
+}

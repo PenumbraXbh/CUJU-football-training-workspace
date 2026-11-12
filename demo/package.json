@@ -1,0 +1,8 @@
+{
+  "name": "cuju-coach-workspace-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "独立、纯静态的足球训练机构工作台作品展示",
+  "scripts": { "start": "node scripts/preview.mjs", "check": "node --check dist/app.js && node --check scripts/preview.mjs && node scripts/check.mjs" }
+}

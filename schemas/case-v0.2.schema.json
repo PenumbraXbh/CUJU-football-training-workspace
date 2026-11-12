@@ -1,0 +1,1654 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Football training input case v0.2",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/drill"
+    },
+    {
+      "$ref": "#/$defs/session"
+    }
+  ],
+  "$defs": {
+    "judgement": {
+      "type": "object",
+      "properties": {
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "enum": [
+            "source_explained",
+            "curation_inferred"
+          ]
+        },
+        "rationale_or_locator": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "statement",
+        "basis",
+        "rationale_or_locator"
+      ],
+      "additionalProperties": false
+    },
+    "logic_statement": {
+      "type": "object",
+      "properties": {
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "enum": [
+            "source_explained",
+            "curation_inferred"
+          ]
+        }
+      },
+      "required": [
+        "statement",
+        "basis"
+      ],
+      "additionalProperties": false
+    },
+    "fact_evidence": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "enum": [
+            "source_stated",
+            "direct_calculation",
+            "curation_inferred"
+          ]
+        },
+        "rationale_or_locator": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "basis",
+        "rationale_or_locator"
+      ],
+      "additionalProperties": false
+    },
+    "variation": {
+      "type": "object",
+      "properties": {
+        "change": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stated_trigger": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "stated_effect": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "stated_conditions": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "source_locator": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "required": [
+        "change"
+      ],
+      "additionalProperties": false
+    },
+    "assessment": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "preliminary"
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/judgement"
+          },
+          "minItems": 0
+        },
+        "transfer_conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/judgement"
+          },
+          "minItems": 0
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/judgement"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "status",
+        "prerequisites",
+        "transfer_conditions",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "participants": {
+      "type": "object",
+      "properties": {
+        "total_available": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "total_min": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "total_max": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "outfield_players": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "active_at_once": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "relationship": {
+          "type": "string",
+          "minLength": 1
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "goalkeepers_required": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "goalkeeper_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "simultaneous_groups": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "waiting_players": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "grouping_and_parallel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "total_available",
+              "total_min",
+              "total_max",
+              "outfield_players",
+              "active_at_once",
+              "goalkeepers_required",
+              "goalkeeper_count",
+              "simultaneous_groups",
+              "waiting_players"
+            ]
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/fact_evidence"
+          }
+        }
+      },
+      "required": [
+        "total_available",
+        "total_min",
+        "total_max",
+        "outfield_players",
+        "active_at_once",
+        "relationship",
+        "roles",
+        "goalkeepers_required",
+        "goalkeeper_count",
+        "simultaneous_groups",
+        "waiting_players",
+        "grouping_and_parallel",
+        "evidence"
+      ],
+      "additionalProperties": false
+    },
+    "timing": {
+      "type": "object",
+      "properties": {
+        "source_text": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "total_duration_minutes": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "work_blocks": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "block_duration_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "rest_between_blocks_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "repetitions": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        }
+      },
+      "required": [
+        "source_text",
+        "total_duration_minutes",
+        "work_blocks",
+        "block_duration_seconds",
+        "rest_between_blocks_seconds",
+        "repetitions"
+      ],
+      "additionalProperties": false
+    },
+    "dimension": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "length_m": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "width_m": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "basis": {
+          "enum": [
+            "source_stated",
+            "direct_calculation"
+          ]
+        },
+        "rationale_or_locator": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "label",
+        "source_text",
+        "length_m",
+        "width_m",
+        "basis",
+        "rationale_or_locator"
+      ],
+      "additionalProperties": false
+    },
+    "space": {
+      "type": "object",
+      "properties": {
+        "area_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dimension"
+          },
+          "minItems": 0
+        },
+        "zones": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "area_type",
+        "dimensions",
+        "zones"
+      ],
+      "additionalProperties": false
+    },
+    "requirements": {
+      "type": "object",
+      "properties": {
+        "participants": {
+          "$ref": "#/$defs/participants"
+        },
+        "volume_and_timing": {
+          "$ref": "#/$defs/timing"
+        },
+        "space": {
+          "$ref": "#/$defs/space"
+        },
+        "equipment": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        "safety_conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/judgement"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "participants",
+        "volume_and_timing",
+        "space",
+        "equipment",
+        "safety_conditions"
+      ],
+      "additionalProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "starting_setup": {
+          "type": "string",
+          "minLength": 1
+        },
+        "start_trigger": {
+          "type": "string",
+          "minLength": 1
+        },
+        "activity_flow": {
+          "type": "string",
+          "minLength": 1
+        },
+        "direction_and_targets": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interaction_or_pressure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "success_condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "participation_and_rotation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "end_condition": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "pressure_type": {
+          "enum": [
+            "unopposed",
+            "interference",
+            "passive",
+            "live",
+            "mixed",
+            null
+          ]
+        },
+        "numerical_relation": {
+          "enum": [
+            "equal",
+            "attacking_overload",
+            "defending_overload",
+            "mixed",
+            null
+          ]
+        },
+        "direction_type": {
+          "enum": [
+            "fixed",
+            "multidirectional",
+            "phase_dependent",
+            null
+          ]
+        },
+        "normalization_basis": {
+          "type": "object",
+          "properties": {
+            "pressure_type": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/fact_evidence"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "numerical_relation": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/fact_evidence"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "direction_type": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/fact_evidence"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "pressure_type",
+            "numerical_relation",
+            "direction_type"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "starting_setup",
+        "start_trigger",
+        "activity_flow",
+        "direction_and_targets",
+        "interaction_or_pressure",
+        "success_condition",
+        "participation_and_rotation",
+        "end_condition",
+        "pressure_type",
+        "numerical_relation",
+        "direction_type",
+        "normalization_basis"
+      ],
+      "additionalProperties": false
+    },
+    "mechanism": {
+      "type": "object",
+      "properties": {
+        "rule_or_constraint": {
+          "$ref": "#/$defs/judgement"
+        },
+        "intended_behaviour": {
+          "$ref": "#/$defs/judgement"
+        },
+        "possible_distortion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/judgement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "rule_or_constraint",
+        "intended_behaviour",
+        "possible_distortion"
+      ],
+      "additionalProperties": false
+    },
+    "design": {
+      "type": "object",
+      "properties": {
+        "design_mode": {
+          "enum": [
+            "action_repetition",
+            "open_decision",
+            "situational_reinforcement",
+            "mixed"
+          ]
+        },
+        "design_mechanisms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mechanism"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "design_mode",
+        "design_mechanisms"
+      ],
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "properties": {
+        "source_coaching_points": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "curation_observation_indicators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rationale": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "statement",
+              "rationale"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0
+        },
+        "common_failures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/judgement"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "source_coaching_points",
+        "curation_observation_indicators",
+        "common_failures"
+      ],
+      "additionalProperties": false
+    },
+    "activity": {
+      "type": "object",
+      "properties": {
+        "activity_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_label": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose_in_session": {
+          "$ref": "#/$defs/logic_statement"
+        },
+        "requirements": {
+          "$ref": "#/$defs/requirements"
+        },
+        "execution": {
+          "$ref": "#/$defs/execution"
+        },
+        "design": {
+          "$ref": "#/$defs/design"
+        },
+        "coaching_and_observation": {
+          "$ref": "#/$defs/observation"
+        },
+        "source_variations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/variation"
+          },
+          "minItems": 0
+        },
+        "transition_from_previous": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/logic_statement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "activity_id",
+        "display_order",
+        "source_label",
+        "title",
+        "purpose_in_session",
+        "requirements",
+        "execution",
+        "design",
+        "coaching_and_observation",
+        "source_variations",
+        "transition_from_previous"
+      ],
+      "additionalProperties": false
+    },
+    "delivery_group": {
+      "type": "object",
+      "properties": {
+        "group_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "participants": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "initial_activity_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "$ref": "#/$defs/fact_evidence"
+        }
+      },
+      "required": [
+        "group_id",
+        "participants",
+        "initial_activity_id",
+        "basis"
+      ],
+      "additionalProperties": false
+    },
+    "delivery_block": {
+      "type": "object",
+      "properties": {
+        "block_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "enum": [
+            "sequential",
+            "parallel",
+            "rotation",
+            "merge"
+          ]
+        },
+        "activity_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/delivery_group"
+          },
+          "minItems": 0
+        },
+        "work_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "transition_or_rest_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "rotation_cycles": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "rotation_rule": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/judgement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coaches_required": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "coaching_notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "unassigned_participants": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unassigned_plan": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "basis": {
+          "$ref": "#/$defs/fact_evidence"
+        }
+      },
+      "required": [
+        "block_id",
+        "mode",
+        "activity_ids",
+        "groups",
+        "work_seconds",
+        "transition_or_rest_seconds",
+        "rotation_cycles",
+        "rotation_rule",
+        "coaches_required",
+        "coaching_notes",
+        "unassigned_participants",
+        "unassigned_plan",
+        "basis"
+      ],
+      "additionalProperties": false
+    },
+    "delivery_plan": {
+      "type": "object",
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/delivery_block"
+          },
+          "minItems": 1
+        },
+        "unresolved_conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/judgement"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "blocks",
+        "unresolved_conditions"
+      ],
+      "additionalProperties": false
+    },
+    "drill": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.2"
+        },
+        "identity": {
+          "type": "object",
+          "properties": {
+            "case_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "case_type": {
+              "const": "drill"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title_origin": {
+              "enum": [
+                "source",
+                "working"
+              ]
+            },
+            "original_language": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "case_id",
+            "case_type",
+            "title",
+            "title_origin",
+            "original_language"
+          ],
+          "additionalProperties": false
+        },
+        "source_evidence": {
+          "type": "object",
+          "properties": {
+            "organization": {
+              "type": "string",
+              "minLength": 1
+            },
+            "author": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            },
+            "document_title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https?://"
+            },
+            "locator": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            },
+            "version": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            },
+            "published_on": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            },
+            "last_verified_on": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            }
+          },
+          "required": [
+            "organization",
+            "document_title",
+            "url"
+          ],
+          "additionalProperties": false
+        },
+        "applicability": {
+          "type": "object",
+          "properties": {
+            "source_applicability": {
+              "type": "object",
+              "properties": {
+                "age_group": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "training_experience_or_level": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "current_ability": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "other_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0
+                }
+              },
+              "required": [
+                "age_group",
+                "training_experience_or_level",
+                "current_ability",
+                "other_conditions"
+              ],
+              "additionalProperties": false
+            },
+            "curation_assessment": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/assessment"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "source_applicability"
+          ],
+          "additionalProperties": false
+        },
+        "training_intent": {
+          "type": "object",
+          "properties": {
+            "source_objectives": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            },
+            "curation_training_problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "topic_intents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "enum": [
+                      "F0",
+                      "A1",
+                      "A2",
+                      "A3",
+                      "D1",
+                      "D2",
+                      "D3",
+                      "T+",
+                      "T-"
+                    ]
+                  },
+                  "status": {
+                    "enum": [
+                      "focus",
+                      "present"
+                    ]
+                  },
+                  "mapping_status": {
+                    "enum": [
+                      "auto_mapped",
+                      "needs_review",
+                      "human_confirmed"
+                    ]
+                  }
+                },
+                "required": [
+                  "code",
+                  "status",
+                  "mapping_status"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "primary_scale": {
+              "enum": [
+                "individual",
+                "unit",
+                "team"
+              ]
+            }
+          },
+          "required": [
+            "source_objectives",
+            "curation_training_problem",
+            "topic_intents",
+            "primary_scale"
+          ],
+          "additionalProperties": false
+        },
+        "source_variations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/variation"
+          },
+          "minItems": 0
+        },
+        "admission_record": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "enum": [
+                "human_reviewed",
+                "automatically_accepted",
+                null
+              ]
+            },
+            "notes": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            }
+          },
+          "required": [
+            "method"
+          ],
+          "additionalProperties": false
+        },
+        "requirements": {
+          "$ref": "#/$defs/requirements"
+        },
+        "execution": {
+          "$ref": "#/$defs/execution"
+        },
+        "design": {
+          "$ref": "#/$defs/design"
+        },
+        "coaching_and_observation": {
+          "$ref": "#/$defs/observation"
+        }
+      },
+      "required": [
+        "schema_version",
+        "identity",
+        "source_evidence",
+        "applicability",
+        "training_intent",
+        "source_variations",
+        "admission_record",
+        "requirements",
+        "execution",
+        "design",
+        "coaching_and_observation"
+      ],
+      "additionalProperties": false
+    },
+    "session": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.2"
+        },
+        "identity": {
+          "type": "object",
+          "properties": {
+            "case_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "case_type": {
+              "const": "session"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title_origin": {
+              "enum": [
+                "source",
+                "working"
+              ]
+            },
+            "original_language": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "case_id",
+            "case_type",
+            "title",
+            "title_origin",
+            "original_language"
+          ],
+          "additionalProperties": false
+        },
+        "source_evidence": {
+          "type": "object",
+          "properties": {
+            "organization": {
+              "type": "string",
+              "minLength": 1
+            },
+            "author": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            },
+            "document_title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https?://"
+            },
+            "locator": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            },
+            "version": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            },
+            "published_on": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            },
+            "last_verified_on": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            }
+          },
+          "required": [
+            "organization",
+            "document_title",
+            "url"
+          ],
+          "additionalProperties": false
+        },
+        "applicability": {
+          "type": "object",
+          "properties": {
+            "source_applicability": {
+              "type": "object",
+              "properties": {
+                "age_group": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "training_experience_or_level": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "current_ability": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "other_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0
+                }
+              },
+              "required": [
+                "age_group",
+                "training_experience_or_level",
+                "current_ability",
+                "other_conditions"
+              ],
+              "additionalProperties": false
+            },
+            "curation_assessment": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/assessment"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "source_applicability"
+          ],
+          "additionalProperties": false
+        },
+        "training_intent": {
+          "type": "object",
+          "properties": {
+            "source_objectives": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            },
+            "curation_training_problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "topic_intents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "enum": [
+                      "F0",
+                      "A1",
+                      "A2",
+                      "A3",
+                      "D1",
+                      "D2",
+                      "D3",
+                      "T+",
+                      "T-"
+                    ]
+                  },
+                  "status": {
+                    "enum": [
+                      "focus",
+                      "present"
+                    ]
+                  },
+                  "mapping_status": {
+                    "enum": [
+                      "auto_mapped",
+                      "needs_review",
+                      "human_confirmed"
+                    ]
+                  }
+                },
+                "required": [
+                  "code",
+                  "status",
+                  "mapping_status"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "primary_scale": {
+              "enum": [
+                "individual",
+                "unit",
+                "team"
+              ]
+            }
+          },
+          "required": [
+            "source_objectives",
+            "curation_training_problem",
+            "topic_intents",
+            "primary_scale"
+          ],
+          "additionalProperties": false
+        },
+        "source_variations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/variation"
+          },
+          "minItems": 0
+        },
+        "admission_record": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "enum": [
+                "human_reviewed",
+                "automatically_accepted",
+                null
+              ]
+            },
+            "notes": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            }
+          },
+          "required": [
+            "method"
+          ],
+          "additionalProperties": false
+        },
+        "session_requirements": {
+          "type": "object",
+          "properties": {
+            "total_participants": {
+              "type": "object",
+              "properties": {
+                "source_text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "full_session_roster": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "total_min": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "total_max": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "outfield_players": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "goalkeepers": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "notes": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "evidence": {
+                  "type": "object",
+                  "propertyNames": {
+                    "enum": [
+                      "full_session_roster",
+                      "total_min",
+                      "total_max",
+                      "outfield_players",
+                      "goalkeepers"
+                    ]
+                  },
+                  "additionalProperties": {
+                    "$ref": "#/$defs/fact_evidence"
+                  }
+                }
+              },
+              "required": [
+                "source_text",
+                "full_session_roster",
+                "total_min",
+                "total_max",
+                "outfield_players",
+                "goalkeepers",
+                "notes",
+                "evidence"
+              ],
+              "additionalProperties": false
+            },
+            "source_total_duration_minutes": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "space_envelope": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "equipment_pool": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "total_participants",
+            "source_total_duration_minutes",
+            "space_envelope",
+            "equipment_pool"
+          ],
+          "additionalProperties": false
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/activity"
+          },
+          "minItems": 1
+        },
+        "delivery_plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/delivery_plan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "session_logic": {
+          "type": "object",
+          "properties": {
+            "sequence_rationale": {
+              "$ref": "#/$defs/logic_statement"
+            },
+            "activity_relationships": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/logic_statement"
+              },
+              "minItems": 0
+            },
+            "cross_activity_observations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/logic_statement"
+              },
+              "minItems": 0
+            },
+            "source_reflection": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "sequence_rationale",
+            "activity_relationships",
+            "cross_activity_observations",
+            "source_reflection"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "identity",
+        "source_evidence",
+        "applicability",
+        "training_intent",
+        "source_variations",
+        "admission_record",
+        "session_requirements",
+        "activities",
+        "session_logic"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
